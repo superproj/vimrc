@@ -1,4 +1,6 @@
+" 不兼容模式
 set nocompatible              " be iMproved, required
+" 关闭文件类型检测
 filetype off                  " required
 
 " set the runtime path to include Vundle and initialize
@@ -10,12 +12,13 @@ call vundle#begin()
 " let Vundle manage Vundle, required
 Plugin 'VundleVim/Vundle.vim'
 
+" install vim-go plugin
 Plugin 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
+Plugin 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plugin 'junegunn/fzf.vim'
 Plugin 'preservim/nerdtree'
 Plugin 'vim-airline/vim-airline'
 Plugin 'kshenoy/vim-signature'
-Plugin 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-Plugin 'junegunn/fzf.vim'
 "Plugin 'mileszs/ack.vim'
 "Plugin 'Yggdroot/LeaderF'
 "Plugin 'kien/ctrlp.vim'
@@ -31,9 +34,13 @@ Plugin 'morhetz/gruvbox'
 call vundle#end()            " required
 filetype plugin indent on    " required
 
+" 打开语法高亮
 syntax on
+" 设置颜色数量
 set t_Co=256
+" 使用gruvbox配色方案
 colorscheme gruvbox
+" 设置背景为暗色
 set background=dark
 
 " common configure
@@ -77,9 +84,7 @@ let go_code_completion_icase = 1
 " updated. By default it's disabled. The delay can be configured with the
 " |'g:go_updatetime'| setting.
 let g:go_auto_type_info = 0
-
 let go_imports_mode = "goimports"
-
 
 " 当使用一个不支持的Vim版本时(支持的版本：Vim版本大于7.4.1689或者Neovim)，开启告警，默认开启
 let g:go_version_warning = 1    
@@ -88,7 +93,7 @@ let g:go_code_completion_enabled = 1
 let g:go_auto_type_info = 1
 " 保存时执行gofmt格式化代码，默认开启
 let g:go_fmt_autosave = 1
-" 保存时自动删除无用的包，添加缺失的包
+" 保存时自动删除无用的包，添加缺失的包。这里可以关闭，否则保存时，经常容易卡死或者保存延时很高
 let g:go_imports_autosave = 0
 " 保存时自动格式化go.mod文件
 let g:go_mod_fmt_autosave = 1
@@ -184,50 +189,52 @@ let g:go_highlight_array_whitespace_error = 1
 let g:go_highlight_extra_types = 1
 let g:go_highlight_space_tab_error = 1
 let g:go_highlight_operators = 1
-
 " let g:go_highlight_functions = 1
 " let g:go_highlight_variable_declarations = 1
 " let g:go_highlight_variable_assignments = 1
 
 " 标签操作
+" 当输入 tn 时自动补全为 tabnew
 ca tn tabnew
+" 当输入 tc 时自动补全为 tabclose
 ca tc tabclose
+" 当输入 ts 时自动补全为 tabs
 ca ts tabs
 
 
 " NERDTree Settings Start
-"map <C-z> :NERDTreeToggle<CR>  " Toggle side window with `CTRL+z`.
 let g:NERDTreeDirArrowExpandable = '▸'
 let g:NERDTreeDirArrowCollapsible = '▾'
 let NERDTreeShowHidden=1 " Show hidden files
 " NERDTree Settings End
 
-map <2-LeftMouse> :GoDef <CR>
-map <RightMouse> :GoDefPop <CR>
-map <CR> :GoDef <CR>
-map <C-I> :GoDefPop <CR>
-map <S-K> :GoDoc <CR>
-map <S-L> :GoIfErr <CR>
-map <S-T> :GoDefType <CR>
-map <S-M> :GoInfo <CR>
-map <S-H> :GoSameIdsToggle <CR>
+" 配置 Vim leader 键：空格键
+nnoremap <SPACE> <Nop>
+map <Space> <Leader>
+
+map <2-LeftMouse> :GoDef <cr>
+map <RightMouse> :GoDefPop <cr>
+map <cr> :GoDef <cr>
+map <C-I> :GoDefPop <cr>
+map <S-K> :GoDoc <cr>
+map <S-L> :GoIfErr <cr>
+map <S-T> :GoDefType <cr>
+map <S-M> :GoInfo <cr>
+map <S-H> :GoSameIdsToggle <cr>
 map <S-T> :GoAddTag<cr>
 map <S-P> :GoImplements<cr>
 map <S-R> :GoRename<cr>
 map <S-C> :GoCallers<cr>
 map <S-F> :GoFillStruct<cr>
+nnoremap <C-w>c :bd<cr>
 
-nnoremap <SPACE> <Nop>
-map <Space> <Leader>
-nnoremap <C-w>c :bd<CR>
-"map <M-c> :CtrlPMixed<CR>
 "let g:ackprg = 'ack'  " 设置使用的搜索命令，默认为ack
 "let g:ackprg = 'ag --nogroup --nocolor --column'
 "let g:fzf_layout = { 'down': '~30%' }
 "let g:fzf_preview_window = ['hidden,right,50%,<70(up,40%)', 'ctrl-/']
+
 let g:fzf_preview_window = ['right:hidden', 'ctrl-/']
 let g:fzf_layout = {'up':'~90%', 'window': { 'width': 0.8, 'height': 0.8,'yoffset':0.5,'xoffset': 0.5, 'highlight': 'Todo', 'border': 'rounded' } }
-"let g:fzf_layout = { 'up':'~90%', 'window': { 'width': 0.9, 'height': 0.8, 'border': 'rounded', 'yoffset':0.5,'xoffset': 0.5, 'highlight': 'Todo'} }
 " [Buffers] Jump to the existing window if possible
 let g:fzf_buffers_jump = 1
 "let g:fzf_action = { 'ctrl-c': ['abort', 'cancel'] }
@@ -238,32 +245,30 @@ let g:fzf_tags_command = 'ctags -R'
 "ctrl-o:toggle+up,ctrl-space:toggle-preview"'
 let $FZF_DEFAULT_COMMAND="rg --files --hidden --glob '!.git/**'"
 "-g '!{node_modules,.git}'
+" 使用 rg 工具在当前项目中查询某个字符串
 nnoremap <leader>f :RG<cr>
+" 查看最近打开的文件和打开的缓冲区
 nnoremap <leader>r :History<cr> 
+" 查看打开的缓冲区
+nnoremap <leader>j :Buffers<cr>
+" 在项目根目录查找文件
 nnoremap <leader>k :Files<cr>
-"nnoremap <leader>k :cd<CR>:Files<CR>
-nnoremap <leader>j :cd %:p:h<CR>:Files<CR>
-nnoremap <leader>l :Buffers<cr>
+"nnoremap <leader>k :cd<cr>:Files<cr>
+" 在文件所在的目录查找文件
+nnoremap <leader>l :cd %:p:h<cr>:Files<cr>
+" 查找当前项目的 Tag (ctags -R)
 nnoremap <leader>t :Tags<cr>
+nnoremap <C-Q> :RG<cr>
+nnoremap <C-R> :History<cr> 
+nnoremap <C-E> :Buffers<cr>
+nnoremap <C-K> :Files<cr>
 
-inoremap { {<CR>}<Esc>ko
+inoremap { {<cr>}<Esc>ko
 "inoremap ( ()<Esc>ha
 "inoremap [ []<Esc>ha
 "inoremap " ""<Esc>ha
 "inoremap ' ''<Esc>ha
 "inoremap ` ``<Esc>ha
-
-" ============> Settings for ctrlp start
-" Quickly find and open a file in the CWD
-"let g:ctrlp_map = '<C-f>'
-
-"let g:ctrlp_working_path_mode = 'ra'
-" Quickly find and open a recently opened file
-" map <leader>f :MRU<CR>
-
-" Quickly find and open a buffer
-
-" ============> Settings for ctrlp end
 
 augroup go
   autocmd!
@@ -272,7 +277,7 @@ augroup go
   autocmd BufNewFile,BufRead *.go setlocal noexpandtab tabstop=4 shiftwidth=4
 
   " :GoBuild and :GoTestCompile
-  "autocmd FileType go nmap <leader>b :<C-u>call <SID>build_go_files()<CR>
+  "autocmd FileType go nmap <leader>b :<C-u>call <SID>build_go_files()<cr>
 
   " :GoTest
   autocmd FileType go nmap <leader>t  <Plug>(go-test)
